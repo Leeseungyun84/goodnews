@@ -17,6 +17,25 @@ function formatDate(dateStr: string) {
   return `${d.getFullYear()}.${String(d.getMonth()+1).padStart(2,'0')}.${String(d.getDate()).padStart(2,'0')}`;
 }
 
+function parseSections(content: string) {
+  // 이모지+제목+내용 패턴 추출 (예: 🪂일상생활: ...)
+  const regex = /([🪂💲⛪📦⚖️🌾🗳️🗺️]+)([^:]+):([^💲⛪🪂📦⚖️🌾🗳️🗺️]+)/g;
+  let match, sections = [];
+  while ((match = regex.exec(content)) !== null) {
+    sections.push({
+      icon: match[1].trim(),
+      title: match[2].trim(),
+      desc: match[3].trim()
+    });
+  }
+  return sections;
+}
+
+function removeSectionLines(text: string) {
+  // 이모지+제목: 으로 시작하는 줄 제거
+  return text.replace(/^([🪂💲⛪📦⚖️🌾🗳️🗺️]+)[^:]+:.*$/gm, '').replace(/\n{2,}/g, '\n').trim();
+}
+
 export default function Home() {
   const [posts, setPosts] = useState<any[]>([]);
   const [popupOpenIdx, setPopupOpenIdx] = useState<number|null>(null);
@@ -77,14 +96,39 @@ export default function Home() {
               key={idx}
               className="relative bg-white rounded-2xl shadow-md cursor-pointer overflow-hidden group transition-transform duration-300 hover:scale-105 hover:shadow-2xl hover:z-10"
               onClick={() => {
+                const sections = parseSections(post["내용"]);
+                let mainText = post["본문"] || post["내용"];
+                const mainTextWithoutSections = removeSectionLines(mainText);
+                let html = '';
+                if (mainTextWithoutSections) {
+                  html += `<div style='margin-bottom:12px;white-space:pre-line;text-align:left;'>${mainTextWithoutSections}</div>`;
+                }
+                sections.forEach(sec => {
+                  html += `<div style="margin-bottom:6px;font-size:1.05em;">
+                    <span style="font-size:1.2em;margin-right:4px;vertical-align:middle;">${sec.icon}</span>
+                    <b>${sec.title}</b>: ${sec.desc}
+                  </div>`;
+                });
+                if (post["출처"]) {
+                  html += `<div style='margin-top:1em;'><a href='${post["출처"]}' target='_blank' style='color:#3085d6;text-decoration:underline;'>원문 보기</a></div>`;
+                }
                 setPopupOpenIdx(idx);
                 Swal.fire({
                   title: post["제목"],
-                  html: `<div style='white-space:pre-line;text-align:left;'>${post["내용"]}</div>` + (post["출처"] ? `<div style='margin-top:1em;'><a href='${post["출처"]}' target='_blank' style='color:#3085d6;text-decoration:underline;'>원문 보기</a></div>` : ''),
+                  html,
                   icon: 'info',
                   confirmButtonText: '닫기',
-                  width: 600,
+                  showCancelButton: !!post["출처"],
+                  cancelButtonText: '뉴스기사',
+                  width: 700,
+                  background: '#f6f7f8',
                   didClose: () => setPopupOpenIdx(null),
+                  preConfirm: () => {},
+                  preDeny: () => {},
+                }).then((result) => {
+                  if (result.dismiss === Swal.DismissReason.cancel && post["출처"]) {
+                    window.open(post["출처"], '_blank');
+                  }
                 });
               }}
             >
@@ -131,14 +175,39 @@ export default function Home() {
               key={idx}
               className="relative bg-white rounded-2xl shadow-md cursor-pointer overflow-hidden group transition-transform duration-300 hover:scale-105 hover:shadow-2xl hover:z-10"
               onClick={() => {
+                const sections = parseSections(post["내용"]);
+                let mainText = post["본문"] || post["내용"];
+                const mainTextWithoutSections = removeSectionLines(mainText);
+                let html = '';
+                if (mainTextWithoutSections) {
+                  html += `<div style='margin-bottom:12px;white-space:pre-line;text-align:left;'>${mainTextWithoutSections}</div>`;
+                }
+                sections.forEach(sec => {
+                  html += `<div style="margin-bottom:6px;font-size:1.05em;">
+                    <span style="font-size:1.2em;margin-right:4px;vertical-align:middle;">${sec.icon}</span>
+                    <b>${sec.title}</b>: ${sec.desc}
+                  </div>`;
+                });
+                if (post["출처"]) {
+                  html += `<div style='margin-top:1em;'><a href='${post["출처"]}' target='_blank' style='color:#3085d6;text-decoration:underline;'>원문 보기</a></div>`;
+                }
                 setPopupOpenIdx(idx);
                 Swal.fire({
                   title: post["제목"],
-                  html: `<div style='white-space:pre-line;text-align:left;'>${post["내용"]}</div>` + (post["출처"] ? `<div style='margin-top:1em;'><a href='${post["출처"]}' target='_blank' style='color:#3085d6;text-decoration:underline;'>원문 보기</a></div>` : ''),
+                  html,
                   icon: 'info',
                   confirmButtonText: '닫기',
-                  width: 600,
+                  showCancelButton: !!post["출처"],
+                  cancelButtonText: '뉴스기사',
+                  width: 700,
+                  background: '#f6f7f8',
                   didClose: () => setPopupOpenIdx(null),
+                  preConfirm: () => {},
+                  preDeny: () => {},
+                }).then((result) => {
+                  if (result.dismiss === Swal.DismissReason.cancel && post["출처"]) {
+                    window.open(post["출처"], '_blank');
+                  }
                 });
               }}
             >
