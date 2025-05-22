@@ -19,6 +19,7 @@ function formatDate(dateStr: string) {
 
 export default function Home() {
   const [posts, setPosts] = useState<any[]>([]);
+  const [popupOpenIdx, setPopupOpenIdx] = useState<number|null>(null);
 
   useEffect(() => {
     fetch(
@@ -76,12 +77,14 @@ export default function Home() {
               key={idx}
               className="relative bg-white rounded-2xl shadow-md cursor-pointer overflow-hidden group transition-transform duration-300 hover:scale-105 hover:shadow-2xl hover:z-10"
               onClick={() => {
+                setPopupOpenIdx(idx);
                 Swal.fire({
                   title: post["제목"],
                   html: `<div style='white-space:pre-line;text-align:left;'>${post["내용"]}</div>` + (post["출처"] ? `<div style='margin-top:1em;'><a href='${post["출처"]}' target='_blank' style='color:#3085d6;text-decoration:underline;'>원문 보기</a></div>` : ''),
                   icon: 'info',
                   confirmButtonText: '닫기',
                   width: 600,
+                  didClose: () => setPopupOpenIdx(null),
                 });
               }}
             >
@@ -94,7 +97,7 @@ export default function Home() {
                 {formatDate(post["날짜"])}
               </span>
               {/* 이모지 */}
-              <div className="flex flex-col items-center justify-center pt-10 pb-4">
+              <div className="flex flex-col items-center justify-center pt-10 pb-2">
                 <div className="text-6xl mb-2 select-none">
                   {post["이모지"] || "📰"}
                 </div>
@@ -104,17 +107,17 @@ export default function Home() {
                 </div>
               </div>
               {/* 내용 일부 미리보기 */}
-              <div className="px-4 pb-6 text-gray-600 text-sm line-clamp-2 text-center">
+              <div className="px-4 text-gray-600 text-sm line-clamp-2 text-center mb-8">
                 {post["내용"]}
               </div>
-              {/* 출처 링크(카드 하단) */}
-              <div className="absolute bottom-3 left-0 w-full flex justify-center">
-                {post["출처"] && (
+              {/* 출처 링크(카드 하단) - 팝업이 열려있지 않을 때만 표시, 항상 카드 하단 중앙에 고정 */}
+              {popupOpenIdx !== idx && post["출처"] && (
+                <div className="absolute bottom-3 left-0 w-full flex justify-center">
                   <a href={post["출처"]} target="_blank" rel="noopener noreferrer" className="text-xs text-blue-500 underline hover:text-blue-700 transition">
                     원문 보기
                   </a>
-                )}
-              </div>
+                </div>
+              )}
             </div>
           ))}
         </div>
@@ -128,12 +131,14 @@ export default function Home() {
               key={idx}
               className="relative bg-white rounded-2xl shadow-md cursor-pointer overflow-hidden group transition-transform duration-300 hover:scale-105 hover:shadow-2xl hover:z-10"
               onClick={() => {
+                setPopupOpenIdx(idx);
                 Swal.fire({
                   title: post["제목"],
                   html: `<div style='white-space:pre-line;text-align:left;'>${post["내용"]}</div>` + (post["출처"] ? `<div style='margin-top:1em;'><a href='${post["출처"]}' target='_blank' style='color:#3085d6;text-decoration:underline;'>원문 보기</a></div>` : ''),
                   icon: 'info',
                   confirmButtonText: '닫기',
                   width: 600,
+                  didClose: () => setPopupOpenIdx(null),
                 });
               }}
             >
@@ -146,7 +151,7 @@ export default function Home() {
                 {formatDate(post["날짜"])}
               </span>
               {/* 이모지 */}
-              <div className="flex flex-col items-center justify-center pt-10 pb-4">
+              <div className="flex flex-col items-center justify-center pt-10 pb-2">
                 <div className="text-6xl mb-2 select-none">
                   {post["이모지"] || "📰"}
                 </div>
@@ -156,17 +161,17 @@ export default function Home() {
                 </div>
               </div>
               {/* 내용 일부 미리보기 */}
-              <div className="px-4 pb-6 text-gray-600 text-sm line-clamp-2 text-center">
+              <div className="px-4 text-gray-600 text-sm line-clamp-2 text-center mb-8">
                 {post["내용"]}
               </div>
-              {/* 출처 링크(카드 하단) */}
-              <div className="absolute bottom-3 left-0 w-full flex justify-center">
-                {post["출처"] && (
+              {/* 출처 링크(카드 하단) - 팝업이 열려있지 않을 때만 표시, 항상 카드 하단 중앙에 고정 */}
+              {popupOpenIdx !== idx && post["출처"] && (
+                <div className="absolute bottom-3 left-0 w-full flex justify-center">
                   <a href={post["출처"]} target="_blank" rel="noopener noreferrer" className="text-xs text-blue-500 underline hover:text-blue-700 transition">
                     원문 보기
                   </a>
-                )}
-              </div>
+                </div>
+              )}
             </div>
           ))}
         </div>
