@@ -44,7 +44,7 @@ export default function Home() {
         <div className="absolute inset-0 bg-black/40" />
         <div className="relative z-10 flex flex-col items-center justify-center w-full">
           <h1 className="text-4xl md:text-5xl font-bold text-white mb-4 drop-shadow-lg">
-            Let's do it together.
+            매일매일 새로운 종목투자 뉴스 
           </h1>
           <p className="text-lg md:text-xl text-white mb-6 drop-shadow">
             We travel the world in search of stories. Come along for the ride.
